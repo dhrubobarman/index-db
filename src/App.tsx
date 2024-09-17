@@ -82,7 +82,7 @@ function App() {
       <div>
         <form
           onSubmit={handleAddUser}
-          className="max-w-xs w-full mx-auto p-3 border rounded-md space-y-4 border-gray-500"
+          className="max-w-xs w-full mx-auto p-3 border rounded-md space-y-4 border-[oklch(var(--bc)/0.2)]"
         >
           <h3 className="mt-0">IndexedDB</h3>
           <input
