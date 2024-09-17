@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+td {
+  text-align: left;
+  vertical-align: middle !important;
+  padding: 0 !important;
+  & * {
+    padding-block: 0px;
+    padding-inline: 5px;
+  }
+}
+th {
+  vertical-align: middle !important;
+  padding: 0 !important;
+  & * {
+    padding-block: 0px;
+    padding-inline: 5px;
+  }
+}
