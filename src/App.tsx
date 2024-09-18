@@ -1,12 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-  Stores,
-  User,
-  addData,
-  deleteData,
-  getStoreData,
-  initDB,
-} from "./lib/db";
+import { addData, deleteData, getStoreData, initDB } from "./lib/db";
+import { Stores, User } from "./types";
 
 function App() {
   const [isDBReady, setIsDBReady] = useState<boolean>(false);

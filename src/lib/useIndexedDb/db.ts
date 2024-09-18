@@ -1,32 +1,45 @@
-import { Stores } from "../types";
-
 let request: IDBOpenDBRequest;
 let db: IDBDatabase;
 let version = 1;
 
-export const initDB = (): Promise<boolean | IDBDatabase> => {
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export enum Stores {
+  Users = "users",
+}
+
+export const initDB = (
+  dbName: string,
+  storeName: string,
+  key: string,
+  debug = false
+): Promise<boolean | IDBDatabase> => {
   return new Promise((resolve) => {
-    request = indexedDB.open("myDB");
+    request = indexedDB.open(dbName);
 
     // if the data object store doesn't exist, create it
     request.onupgradeneeded = () => {
       db = request.result;
 
-      if (!db.objectStoreNames.contains(Stores.Users)) {
-        console.log("Creating users store");
-        db.createObjectStore(Stores.Users, { keyPath: "id" });
+      if (!db.objectStoreNames.contains(storeName)) {
+        if (debug) console.log("Creating users store");
+        db.createObjectStore(storeName, { keyPath: key });
       }
       // no need to resolve here
     };
 
-    request.onsuccess = (e) => {
+    request.onsuccess = () => {
       db = request.result;
       // get current version and store it
       version = db.version;
       resolve(request.result);
     };
 
-    request.onerror = (e) => {
+    request.onerror = () => {
       resolve(false);
     };
   });
@@ -34,13 +47,14 @@ export const initDB = (): Promise<boolean | IDBDatabase> => {
 
 export const addData = <T>(
   storeName: string,
-  data: T
+  data: T,
+  debug = false
 ): Promise<T | string | null> => {
   return new Promise((resolve) => {
     request = indexedDB.open("myDB", version);
 
     request.onsuccess = () => {
-      console.log("request.onsuccess - addData", data);
+      if (debug) console.log("request.onsuccess - addData", data);
       db = request.result;
       const tx = db.transaction(storeName, "readwrite");
       const store = tx.objectStore(storeName);
@@ -61,13 +75,14 @@ export const addData = <T>(
 
 export const deleteData = (
   storeName: string,
-  key: string
+  key: string,
+  debug = false
 ): Promise<boolean> => {
   return new Promise((resolve) => {
     request = indexedDB.open("myDB", version);
 
     request.onsuccess = () => {
-      console.log("request.onsuccess - deleteData", key);
+      if (debug) console.log("request.onsuccess - deleteData", key);
       db = request.result;
       const tx = db.transaction(storeName, "readwrite");
       const store = tx.objectStore(storeName);
@@ -85,13 +100,14 @@ export const deleteData = (
 export const updateData = <T>(
   storeName: string,
   key: string,
-  data: T
+  data: T,
+  debug = false
 ): Promise<T | string | null> => {
   return new Promise((resolve) => {
     request = indexedDB.open("myDB", version);
 
     request.onsuccess = () => {
-      console.log("request.onsuccess - updateData", key);
+      if (debug) console.log("request.onsuccess - updateData", key);
       db = request.result;
       const tx = db.transaction(storeName, "readwrite");
       const store = tx.objectStore(storeName);
@@ -108,12 +124,15 @@ export const updateData = <T>(
   });
 };
 
-export const getStoreData = <T>(storeName: Stores): Promise<T[]> => {
+export const getStoreData = <T>(
+  storeName: string,
+  debug = false
+): Promise<T[]> => {
   return new Promise((resolve) => {
     request = indexedDB.open("myDB");
 
     request.onsuccess = () => {
-      console.log("request.onsuccess - getAllData");
+      if (debug) console.log("request.onsuccess - getAllData");
       db = request.result;
       const tx = db.transaction(storeName, "readonly");
       const store = tx.objectStore(storeName);
