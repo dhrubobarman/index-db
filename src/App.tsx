@@ -1,15 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { Stores, User } from "./types";
 import useIndexedDb from "./lib/useIndexedDb";
+import EditDialog from "./EditDialog";
 
 function App() {
-  const { addData, deleteData, getStoreData, isDBReady } = useIndexedDb({
-    storeName: Stores.Users,
-    uniqueKey: "id",
-    debug: true,
-  });
+  const { addData, deleteData, getStoreData, isDBReady, updateData } =
+    useIndexedDb({
+      storeName: Stores.Users,
+      uniqueKey: "id",
+      debug: true,
+    });
   const [error, setError] = useState<string | null>(null);
   const [users, setUsers] = useState<User[] | []>([]);
+  const [editingData, setEditingData] = useState<User | null>(null);
 
   const handleAddUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,13 +59,19 @@ function App() {
   };
 
   const handleGetUsers = useCallback(async () => {
-    try {
-      const users = await getStoreData<User>();
-      setUsers(users);
-    } catch (error) {
-      console.log(error);
-    }
+    const users = await getStoreData<User>();
+    setUsers(users);
   }, [getStoreData]);
+
+  const handleUpdateData = async (data: User) => {
+    try {
+      await updateData(data.id, data);
+      setEditingData(null);
+      handleGetUsers();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     if (isDBReady) {
@@ -79,6 +88,14 @@ function App() {
 
   return (
     <main className="mt-[40px] container mx-auto text-center space-y-4 prose">
+      {editingData && (
+        <EditDialog
+          data={editingData}
+          onClose={() => setEditingData(null)}
+          onConfirm={handleUpdateData}
+          setData={setEditingData}
+        />
+      )}
       <div>
         <form
           onSubmit={handleAddUser}
@@ -134,7 +151,13 @@ function App() {
                   <p>{user.id}</p>
                 </td>
                 <td>
-                  <p>
+                  <p className="flex gap-2">
+                    <button
+                      className="btn btn-neutral btn-xs"
+                      onClick={() => setEditingData(user)}
+                    >
+                      Edit
+                    </button>
                     <button
                       className="btn btn-error btn-xs"
                       onClick={() => handleRemoveUser(user.id)}
