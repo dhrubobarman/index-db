@@ -31,13 +31,14 @@ export const initDB = (
 };
 
 export const addData = <T>(
+  dbName: string,
   storeName: string,
   data: T,
   version?: number,
   debug = false
 ): Promise<T | string | null> => {
   return new Promise((resolve) => {
-    const request = indexedDB.open("myDB", version);
+    const request = indexedDB.open(dbName, version);
 
     request.onsuccess = () => {
       if (debug) console.log("request.onsuccess - addData", data);
@@ -60,13 +61,14 @@ export const addData = <T>(
 };
 
 export const deleteData = (
+  dbName: string,
   storeName: string,
   key: string,
   version?: number,
   debug = false
 ): Promise<boolean> => {
   return new Promise((resolve) => {
-    const request = indexedDB.open("myDB", version);
+    const request = indexedDB.open(dbName, version);
 
     request.onsuccess = () => {
       if (debug) console.log("request.onsuccess - deleteData", key);
@@ -85,6 +87,7 @@ export const deleteData = (
 };
 
 export const updateData = <T>(
+  dbName: string,
   storeName: string,
   key: string,
   data: T,
@@ -92,7 +95,7 @@ export const updateData = <T>(
   debug = false
 ): Promise<T | string | null> => {
   return new Promise((resolve) => {
-    const request = indexedDB.open("myDB", version);
+    const request = indexedDB.open(dbName, version);
 
     request.onsuccess = () => {
       if (debug) console.log("request.onsuccess - updateData", key);
@@ -113,12 +116,13 @@ export const updateData = <T>(
 };
 
 export const getStoreData = <T>(
+  dbName: string,
   storeName: string,
   version?: number,
   debug = false
 ): Promise<T[]> => {
   return new Promise((resolve) => {
-    const request = indexedDB.open("myDB", version);
+    const request = indexedDB.open(dbName, version);
 
     request.onsuccess = () => {
       if (debug) console.log("request.onsuccess - getAllData");

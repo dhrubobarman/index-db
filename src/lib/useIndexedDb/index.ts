@@ -93,28 +93,28 @@ const useIndexedDb = ({
 
   const handleAddData = useCallback(
     <T>(data: T): Promise<T | string | null> => {
-      return addData(storeName, data, stateVersion, debug);
+      return addData(dbName, storeName, data, stateVersion, debug);
     },
-    [debug, stateVersion, storeName]
+    [dbName, debug, stateVersion, storeName]
   );
 
   const handleDeleteData = useCallback(
     (key: string): Promise<boolean> => {
-      return deleteData(storeName, key, stateVersion, debug);
+      return deleteData(dbName, storeName, key, stateVersion, debug);
     },
-    [debug, stateVersion, storeName]
+    [dbName, debug, stateVersion, storeName]
   );
 
   const handleUpdateData = useCallback(
     <T>(key: string, data: T): Promise<T | string | null> => {
-      return updateData(storeName, key, data, stateVersion, debug);
+      return updateData(dbName, storeName, key, data, stateVersion, debug);
     },
-    [debug, stateVersion, storeName]
+    [dbName, debug, stateVersion, storeName]
   );
 
   const handleGetStoreData = useCallback(<T>(): Promise<T[]> => {
-    return getStoreData(storeName, stateVersion, debug);
-  }, [debug, stateVersion, storeName]);
+    return getStoreData(dbName, storeName, stateVersion, debug);
+  }, [dbName, debug, stateVersion, storeName]);
 
   return {
     isDBReady,

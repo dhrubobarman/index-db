@@ -3,12 +3,11 @@ import { Stores, User } from "./types";
 import useIndexedDb from "./lib/useIndexedDb";
 
 function App() {
-  const { addData, deleteData, getStoreData, isDBReady, updateData } =
-    useIndexedDb({
-      storeName: Stores.Users,
-      uniqueKey: "id",
-      debug: true,
-    });
+  const { addData, deleteData, getStoreData, isDBReady } = useIndexedDb({
+    storeName: Stores.Users,
+    uniqueKey: "id",
+    debug: true,
+  });
   const [error, setError] = useState<string | null>(null);
   const [users, setUsers] = useState<User[] | []>([]);
 
@@ -57,14 +56,13 @@ function App() {
   };
 
   const handleGetUsers = useCallback(async () => {
-    const users = await getStoreData<User>();
-    setUsers(users);
+    try {
+      const users = await getStoreData<User>();
+      setUsers(users);
+    } catch (error) {
+      console.log(error);
+    }
   }, [getStoreData]);
-
-  // const handleUpdateData = async (id: string, data: User) => {
-  //   await updateData(id, data);
-  //   handleGetUsers();
-  // };
 
   useEffect(() => {
     if (isDBReady) {
