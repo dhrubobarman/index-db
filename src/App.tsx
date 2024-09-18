@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
-import { addData, deleteData, getStoreData, initDB } from "./lib/db";
 import { Stores, User } from "./types";
+import useIndexedDb from "./lib/useIndexedDb";
 
 function App() {
-  const [isDBReady, setIsDBReady] = useState<boolean>(false);
+  const { addData, deleteData, getStoreData, isDBReady, updateData } =
+    useIndexedDb({
+      storeName: Stores.Users,
+      uniqueKey: "id",
+      debug: true,
+    });
   const [error, setError] = useState<string | null>(null);
   const [users, setUsers] = useState<User[] | []>([]);
-
-  const handleInitDB = async () => {
-    const status = await initDB();
-    setIsDBReady(!!status);
-  };
 
   const handleAddUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,7 +30,7 @@ function App() {
     }
 
     try {
-      await addData(Stores.Users, { name, email, id });
+      await addData({ name, email, id });
       // refetch users after creating data
       handleGetUsers();
     } catch (err: unknown) {
@@ -44,7 +44,7 @@ function App() {
 
   const handleRemoveUser = async (id: string) => {
     try {
-      await deleteData(Stores.Users, id);
+      await deleteData(id);
       // refetch users after deleting data
       handleGetUsers();
     } catch (err: unknown) {
@@ -57,19 +57,27 @@ function App() {
   };
 
   const handleGetUsers = useCallback(async () => {
-    const users = await getStoreData<User>(Stores.Users);
+    const users = await getStoreData<User>();
     setUsers(users);
-  }, []);
+  }, [getStoreData]);
 
-  useEffect(() => {
-    handleInitDB();
-  }, []);
+  // const handleUpdateData = async (id: string, data: User) => {
+  //   await updateData(id, data);
+  //   handleGetUsers();
+  // };
 
   useEffect(() => {
     if (isDBReady) {
       handleGetUsers();
     }
   }, [isDBReady, handleGetUsers]);
+
+  if (!isDBReady)
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <h1 className="text-[50px] underline">Loading...</h1>
+      </div>
+    );
 
   return (
     <main className="mt-[40px] container mx-auto text-center space-y-4 prose">
