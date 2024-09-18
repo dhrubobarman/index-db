@@ -96,50 +96,50 @@ function App() {
           setData={setEditingData}
         />
       )}
-      <div>
+      <div className="border-b pb-8 mb-8 border-[oklch(var(--bc)/0.2)]">
         <form
           onSubmit={handleAddUser}
-          className="max-w-xs w-full mx-auto p-3 border rounded-md space-y-4 border-[oklch(var(--bc)/0.2)]"
+          className="max-w-md w-full mx-auto p-6 border rounded-md space-y-4 border-[oklch(var(--bc)/0.2)]"
         >
           <h3 className="mt-0">IndexedDB</h3>
           <input
-            className="input input-bordered w-full max-w-xs block"
+            className="input input-bordered w-full block"
             type="text"
             name="name"
             placeholder="Name"
           />
           <input
-            className="input input-bordered w-full max-w-xs block"
+            className="input input-bordered w-full block"
             type="email"
             name="email"
             placeholder="Email"
           />
-          <button className="btn btn-primary btn-sm" type="submit">
+          <button className="btn " type="submit">
             Add User
           </button>
         </form>
         {error && <p style={{ color: "red" }}>{error}</p>}
       </div>
-      {users.length > 0 && (
-        <table className="">
-          <thead>
-            <tr>
-              <th>
-                <p>Name</p>
-              </th>
-              <th>
-                <p>Email</p>
-              </th>
-              <th>
-                <p>ID</p>
-              </th>
-              <th>
-                <p>Actions</p>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
+      <table className="">
+        <thead>
+          <tr>
+            <th className="min-w-[139px]">
+              <p>Name</p>
+            </th>
+            <th className="min-w-[203px]">
+              <p>Email</p>
+            </th>
+            <th className="min-w-[109px]">
+              <p>ID</p>
+            </th>
+            <th className="min-w-[111px]">
+              <p>Actions</p>
+            </th>
+          </tr>
+        </thead>
+        <tbody className="relative min-h-[300px]">
+          {users.length > 0 ? (
+            users.map((user) => (
               <tr key={user.id}>
                 <td>
                   <p>{user.name}</p>
@@ -167,10 +167,14 @@ function App() {
                   </p>
                 </td>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            ))
+          ) : (
+            <div className="absolute inset-0 m-auto text-md mt-3">
+              No Data Found
+            </div>
+          )}
+        </tbody>
+      </table>
     </main>
   );
 }
